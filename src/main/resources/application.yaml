@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: spring-boot-template
+  docker:
+    compose:
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  datasource:
+    url: jdbc:postgresql://localhost:5432/application-db
+    username: postgres
+    password: postgres
+  flyway:
+    enabled: true
+    user: postgres
+    password: postgres
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  metrics:
+    enable:
+      all: false
+  otlp:
+    metrics:
+      export:
+        url: http://localhost:4318/v1/metrics
+
+jwt:
+  rsa:
+    public-key: file:certs/public.pem
+    private-key: file:certs/private.pem
