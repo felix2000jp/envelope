@@ -9,7 +9,7 @@ on:
 env:
   REGISTRY_NAME: ghcr.io
   APPLICATION_NAME: ${{ github.repository }}
-  APP_JAR_ARTIFACT: app-jar-artifact
+  APPLICATION_JAR_ARTIFACT: application-jar-artifact
 
 jobs:
   build-and-test-code:
@@ -27,21 +27,12 @@ jobs:
           java-version: 21
           cache: maven
       - name: Build and test code
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: >
-          mvn -B clean verify
-          -Pcoverage org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
-          -Dsonar.host.url=https://sonarcloud.io
-          -Dsonar.projectKey=felix2000jp_spring-boot-template
-          -Dsonar.organization=felix2000jp
-          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+        run: mvn -B clean package
       - name: Upload JAR file artifact
         uses: actions/upload-artifact@v4
         with:
           path: 'target/*.jar'
-          name: ${{ env.APP_JAR_ARTIFACT }}
+          name: ${{ env.APPLICATION_JAR_ARTIFACT }}
           if-no-files-found: error
   build-and-push-image:
     name: Build and push the image
@@ -51,7 +42,7 @@ jobs:
       - name: Download JAR file artifact
         uses: actions/download-artifact@v5
         with:
-          name: ${{ env.APP_JAR_ARTIFACT }}
+          name: ${{ env.APPLICATION_JAR_ARTIFACT }}
       - name: Setup docker buildx
         uses: docker/setup-buildx-action@v3
       - name: Login to the registry
@@ -71,17 +62,7 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v6
         with:
-          push: ${{ github.ref == 'refs/heads/main' }}
+          push: false
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
           build-args: APP_JAR=*.jar
-      - name: test
-        run: ls -a
-  deploy-application:
-    if: ${{ github.ref == 'refs/heads/main' }}
-    name: Deploy the application
-    needs: [ build-and-push-image ]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Setup deploy env
-        run: echo "Use this step to deploy your app if needed"
