@@ -9,10 +9,10 @@
         <relativePath/>
     </parent>
     <groupId>dev.felix2000jp</groupId>
-    <artifactId>spring-boot-template</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>spring-boot-template</name>
-    <description>spring-boot-template</description>
+    <artifactId>envelope</artifactId>
+    <version>0.0.1</version>
+    <name>envelope</name>
+    <description>envelope budgeting application</description>
     <url/>
     <licenses>
         <license/>

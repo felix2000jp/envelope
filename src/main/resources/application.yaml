@@ -1,8 +1,11 @@
 spring:
   application:
-    name: spring-boot-template
+    name: envelope
   docker:
     compose:
+      enabled: true
+  threads:
+    virtual:
       enabled: true
   jpa:
     hibernate:
