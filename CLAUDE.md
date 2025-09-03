@@ -5,8 +5,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## IMPORTANT
 
 ALWAYS refer to the appusers module for best practices and code style, naming and architecture conventions. Every new
-feature must come with unit tests. When running tests NEVER run all tests, run the tests for the module you are working
-while ignoring the integration tests - only I can run integration tests.
+feature must come with unit tests. When running tests NEVER RUN ALL TESTS, run only the tests for the module you are
+working while ignoring the integration tests. Only I can run integration tests.
 
 ## Project Overview
 
