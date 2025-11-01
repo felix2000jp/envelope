@@ -9,7 +9,7 @@ on:
 env:
   REGISTRY_NAME: ghcr.io
   APPLICATION_NAME: ${{ github.repository }}
-  APPLICATION_JAR_ARTIFACT: application-jar-artifact
+  TARGET_JAR_ARTIFACT: target-jar
 
 jobs:
   build-and-test-code:
@@ -24,7 +24,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: 21
+          java-version: 25
           cache: maven
       - name: Build and test code
         run: mvn -B clean verify
@@ -32,17 +32,21 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: 'target/*.jar'
-          name: ${{ env.APPLICATION_JAR_ARTIFACT }}
+          name: ${{ env.TARGET_JAR_ARTIFACT }}
           if-no-files-found: error
   build-and-push-image:
     name: Build and push the image
     needs: [ build-and-test-code ]
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
       - name: Download JAR file artifact
         uses: actions/download-artifact@v5
         with:
-          name: ${{ env.APPLICATION_JAR_ARTIFACT }}
+          name: ${{ env.TARGET_JAR_ARTIFACT }}
       - name: Setup docker buildx
         uses: docker/setup-buildx-action@v3
       - name: Login to the registry
@@ -65,4 +69,4 @@ jobs:
           push: false
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
-          build-args: APP_JAR=*.jar
+          build-args: TARGET_JAR=*.jar
