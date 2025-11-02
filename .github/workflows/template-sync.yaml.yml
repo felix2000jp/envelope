@@ -1,4 +1,4 @@
-name: Repository template sync
+name: Template sync
 
 on:
   workflow_dispatch:
@@ -8,7 +8,8 @@ permissions:
   pull-requests: write
 
 jobs:
-  repo-sync:
+  template-sync:
+    name: Template sync
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
