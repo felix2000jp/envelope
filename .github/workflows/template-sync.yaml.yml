@@ -1,0 +1,19 @@
+name: Repository template sync
+
+on:
+  workflow_dispatch:
+
+jobs:
+  repo-sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: actions-template-sync
+        uses: AndreasAugustin/actions-template-sync@v2
+        with:
+          source_repo_path: felix2000jp/spring-boot-template
+          pr_labels: "chore: repository template sync"
