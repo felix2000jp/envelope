@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.6</version>
+        <version>3.5.7</version>
         <relativePath/>
     </parent>
     <groupId>dev.felix2000jp</groupId>
@@ -29,8 +29,8 @@
 
     <properties>
         <java.version>25</java.version>
-        <spring-modulith.version>1.4.3</spring-modulith.version>
-        <jmolecules.version>2023.3.4</jmolecules.version>
+        <spring-modulith-bom.version>1.4.4</spring-modulith-bom.version>
+        <jmolecules-bom.version>2023.3.4</jmolecules-bom.version>
     </properties>
 
     <dependencies>
@@ -152,14 +152,14 @@
             <dependency>
                 <groupId>org.springframework.modulith</groupId>
                 <artifactId>spring-modulith-bom</artifactId>
-                <version>${spring-modulith.version}</version>
+                <version>${spring-modulith-bom.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.jmolecules</groupId>
                 <artifactId>jmolecules-bom</artifactId>
-                <version>${jmolecules.version}</version>
+                <version>${jmolecules-bom.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
