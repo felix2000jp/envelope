@@ -18,5 +18,5 @@ jobs:
         uses: AndreasAugustin/actions-template-sync@v2
         with:
           source_repo_path: felix2000jp/spring-boot-template
-          pr_labels: "chore: repository template sync"
+          pr_title: "chore: repository template sync"
           pr_commit_msg: "chore: repository template sync"
