@@ -19,3 +19,4 @@ jobs:
         with:
           source_repo_path: felix2000jp/spring-boot-template
           pr_labels: "chore: repository template sync"
+          pr_commit_msg: "chore: repository template sync"
