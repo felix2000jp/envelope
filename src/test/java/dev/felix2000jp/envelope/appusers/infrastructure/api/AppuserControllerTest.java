@@ -207,4 +207,17 @@ class AppuserControllerTest {
                 .andExpect(jsonPath("$.status").value(404));
     }
 
+    @Test
+    void login_then_return_200_and_token() throws Exception {
+        var appuserToken = "sample-jwt-token";
+
+        when(appuserService.login()).thenReturn(appuserToken);
+
+        var request = post("/api/appusers/login");
+        mockMvc
+                .perform(request)
+                .andExpect(status().isOk())
+                .andExpect(content().string(appuserToken));
+    }
+
 }
