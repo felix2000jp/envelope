@@ -1,0 +1,17 @@
+services:
+  database:
+    image: postgres
+    environment:
+      POSTGRES_DB: application-db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+  grafana:
+    image: grafana/otel-lgtm
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+      - "3000:3000"
+    profiles:
+      - production
