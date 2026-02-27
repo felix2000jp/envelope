@@ -16,7 +16,7 @@ class AppuserDeletedEventHandler {
 
     @ApplicationModuleListener
     void on(AppuserDeletedEvent event) {
-        accountService.delete(event.appuserId());
+        accountService.deleteByUserId(event.appuserId());
     }
 
 }

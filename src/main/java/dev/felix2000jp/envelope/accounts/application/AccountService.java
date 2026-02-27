@@ -1,6 +1,5 @@
 package dev.felix2000jp.envelope.accounts.application;
 
-
 import dev.felix2000jp.envelope.accounts.application.dtos.AccountDto;
 import dev.felix2000jp.envelope.accounts.application.dtos.AccountListDto;
 import dev.felix2000jp.envelope.accounts.application.dtos.AddTransactionDto;
@@ -89,9 +88,9 @@ public class AccountService {
     }
 
     @Transactional
-    public void delete(UUID id) {
-        accountRepository.deleteAllByUserId(new UserId(id));
-        log.info("Accounts with userId {} deleted", id);
+    public void deleteByUserId(UUID userId) {
+        accountRepository.deleteAllByUserId(new UserId(userId));
+        log.info("Accounts with userId {} deleted", userId);
     }
 
     @Transactional(readOnly = true)

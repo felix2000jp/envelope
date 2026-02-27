@@ -188,10 +188,10 @@ class AccountServiceTest {
     }
 
     @Test
-    void delete_then_delete_all_accounts_for_user() {
+    void deleteByUserId_then_delete_all_accounts_for_user() {
         var userId = UUID.randomUUID();
 
-        accountService.delete(userId);
+        accountService.deleteByUserId(userId);
 
         verify(accountRepository).deleteAllByUserId(new UserId(userId));
     }

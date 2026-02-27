@@ -1,7 +1,14 @@
 package dev.felix2000jp.envelope.accounts.domain;
 
 import dev.felix2000jp.envelope.accounts.domain.exceptions.TransactionNotFoundException;
-import dev.felix2000jp.envelope.accounts.domain.valueobjects.*;
+import dev.felix2000jp.envelope.accounts.domain.valueobjects.AccountBalance;
+import dev.felix2000jp.envelope.accounts.domain.valueobjects.AccountId;
+import dev.felix2000jp.envelope.accounts.domain.valueobjects.AccountName;
+import dev.felix2000jp.envelope.accounts.domain.valueobjects.TransactionAmount;
+import dev.felix2000jp.envelope.accounts.domain.valueobjects.TransactionDate;
+import dev.felix2000jp.envelope.accounts.domain.valueobjects.TransactionId;
+import dev.felix2000jp.envelope.accounts.domain.valueobjects.TransactionMemo;
+import dev.felix2000jp.envelope.accounts.domain.valueobjects.UserId;
 import jakarta.persistence.*;
 import org.jmolecules.ddd.types.AggregateRoot;
 import org.jmolecules.event.types.DomainEvent;
@@ -25,7 +32,7 @@ public class Account implements AggregateRoot<Account, AccountId> {
     private AccountId id;
 
     @Embedded
-    @AttributeOverride(name = "value", column = @Column(name = "userId", nullable = false))
+    @AttributeOverride(name = "value", column = @Column(name = "user_id", nullable = false))
     private UserId userId;
 
     @Embedded
