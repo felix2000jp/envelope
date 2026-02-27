@@ -5,13 +5,13 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.2</version>
+        <version>4.0.3</version>
         <relativePath/>
     </parent>
     <groupId>dev.felix2000jp</groupId>
-    <artifactId>spring-boot-template</artifactId>
+    <artifactId>envelope</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>spring-boot-template</name>
+    <name>envelope</name>
     <description>A ready to use spring boot template</description>
     <url/>
     <licenses>
@@ -29,7 +29,7 @@
 
     <properties>
         <java.version>25</java.version>
-        <spring-modulith.version>2.0.2</spring-modulith.version>
+        <spring-modulith.version>2.0.3</spring-modulith.version>
         <jmolecules.version>2025.0.2</jmolecules.version>
     </properties>
 
