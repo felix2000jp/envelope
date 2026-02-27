@@ -166,6 +166,7 @@ public class Account implements AggregateRoot<Account, AccountId> {
                 .filter(tr -> tr.getId().equals(transactionId))
                 .findFirst()
                 .orElseThrow(TransactionNotFoundException::new);
+        var previousAmount = transaction.getAmount().value();
 
         if (amount != null) {
             transaction.setAmount(amount);
@@ -179,8 +180,9 @@ public class Account implements AggregateRoot<Account, AccountId> {
             transaction.setMemo(memo);
         }
 
-        if (transaction.isCleared()) {
-            this.balance = new AccountBalance(this.balance.value().add(transaction.getAmount().value()));
+        if (transaction.isCleared() && amount != null) {
+            var balanceDelta = transaction.getAmount().value().subtract(previousAmount);
+            this.balance = new AccountBalance(this.balance.value().add(balanceDelta));
         }
     }
 

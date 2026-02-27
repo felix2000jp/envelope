@@ -248,6 +248,58 @@ class AccountTest {
     }
 
     @Test
+    void updateTransaction_given_cleared_transaction_and_new_amount_then_update_balance_by_delta() {
+        var account = Account.from(
+                new AccountId(UUID.randomUUID()),
+                new UserId(UUID.randomUUID()),
+                new AccountName("Test Account"),
+                new AccountBalance(BigDecimal.valueOf(1000.00))
+        );
+        account.addTransaction(
+                new TransactionAmount(BigDecimal.valueOf(100.00)),
+                new TransactionDate(LocalDate.now()),
+                new TransactionMemo("Original memo"),
+                true
+        );
+        var transactionId = account.getTransactions().get(1).getId();
+
+        account.updateTransaction(
+                transactionId,
+                new TransactionAmount(BigDecimal.valueOf(300.00)),
+                null,
+                null
+        );
+
+        assertThat(account.getBalance().value()).isEqualTo(BigDecimal.valueOf(1300.00));
+    }
+
+    @Test
+    void updateTransaction_given_cleared_transaction_and_same_amount_then_keep_balance() {
+        var account = Account.from(
+                new AccountId(UUID.randomUUID()),
+                new UserId(UUID.randomUUID()),
+                new AccountName("Test Account"),
+                new AccountBalance(BigDecimal.valueOf(1000.00))
+        );
+        account.addTransaction(
+                new TransactionAmount(BigDecimal.valueOf(100.00)),
+                new TransactionDate(LocalDate.now()),
+                new TransactionMemo("Original memo"),
+                true
+        );
+        var transactionId = account.getTransactions().get(1).getId();
+
+        account.updateTransaction(
+                transactionId,
+                null,
+                new TransactionDate(LocalDate.of(2024, 12, 15)),
+                new TransactionMemo("Updated memo")
+        );
+
+        assertThat(account.getBalance().value()).isEqualTo(BigDecimal.valueOf(1100.00));
+    }
+
+    @Test
     void updateTransaction_given_nonexistent_transaction_id_then_throw_exception() {
         var account = Account.from(
                 new AccountId(UUID.randomUUID()),
