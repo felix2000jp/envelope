@@ -217,7 +217,7 @@ class AccountControllerTest {
     }
 
     @Test
-    void closeAccount_then_return_200_and_closed_account() throws Exception {
+    void closeAccount_then_return_204() throws Exception {
         var request = patch("/api/accounts/{id}/close", accountDto.id());
         mockMvc
                 .perform(request.with(csrf()))
@@ -241,7 +241,7 @@ class AccountControllerTest {
     }
 
     @Test
-    void openAccount_then_return_200_and_opened_account() throws Exception {
+    void openAccount_then_return_204() throws Exception {
         var request = patch("/api/accounts/{id}/open", accountDto.id());
         mockMvc
                 .perform(request.with(csrf()))

@@ -13,11 +13,11 @@ import java.util.UUID;
 @Validated
 @RestController
 @RequestMapping("/api/accounts")
-public class AccountController {
+class AccountController {
 
     private final AccountService accountService;
 
-    public AccountController(AccountService accountService) {
+    AccountController(AccountService accountService) {
         this.accountService = accountService;
     }
 

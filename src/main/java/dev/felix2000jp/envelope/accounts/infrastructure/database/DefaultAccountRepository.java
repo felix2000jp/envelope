@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class DefaultAccountRepository implements AccountRepository {
+class DefaultAccountRepository implements AccountRepository {
 
     private final AccountJpaRepository accountJpaRepository;
 
-    public DefaultAccountRepository(AccountJpaRepository accountJpaRepository) {
+    DefaultAccountRepository(AccountJpaRepository accountJpaRepository) {
         this.accountJpaRepository = accountJpaRepository;
     }
 

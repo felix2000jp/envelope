@@ -6,11 +6,11 @@ import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AppuserDeletedEventHandler {
+class AppuserDeletedEventHandler {
 
     private final AccountService accountService;
 
-    public AppuserDeletedEventHandler(AccountService accountService) {
+    AppuserDeletedEventHandler(AccountService accountService) {
         this.accountService = accountService;
     }
 

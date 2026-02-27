@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class AccountMapper {
+class AccountMapper {
 
     AccountDto toAccountDto(Account account) {
         return new AccountDto(
