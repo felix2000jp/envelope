@@ -124,15 +124,18 @@ public class Account implements AggregateRoot<Account, AccountId> {
         Assert.notNull(balance, "balance must not be null");
 
         var balanceDifference = balance.value().subtract(this.balance.value());
-        var transaction = Transaction.from(
-                new TransactionId(UUID.randomUUID()),
-                new TransactionAmount(balanceDifference),
-                new TransactionDate(LocalDate.now()),
-                new TransactionMemo(""),
-                true
-        );
 
-        this.transactions.add(transaction);
+        if (balanceDifference.compareTo(BigDecimal.ZERO) != 0) {
+            var transaction = Transaction.from(
+                    new TransactionId(UUID.randomUUID()),
+                    new TransactionAmount(balanceDifference),
+                    new TransactionDate(LocalDate.now()),
+                    new TransactionMemo(""),
+                    true
+            );
+            this.transactions.add(transaction);
+        }
+
         this.balance = balance;
     }
 

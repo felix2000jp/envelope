@@ -29,6 +29,7 @@ public class Transaction implements Entity<Account, TransactionId> {
     @AttributeOverride(name = "value", column = @Column(name = "date_of_transaction", nullable = false))
     private TransactionDate dateOfTransaction;
 
+    @Embedded
     @AttributeOverride(name = "value", column = @Column(name = "memo", nullable = false))
     private TransactionMemo memo;
 

@@ -94,6 +94,22 @@ class AccountTest {
     }
 
     @Test
+    void setBalance_given_same_balance_then_do_not_create_transaction() {
+        var account = Account.from(
+                new AccountId(UUID.randomUUID()),
+                new UserId(UUID.randomUUID()),
+                new AccountName("Test Account"),
+                new AccountBalance(BigDecimal.valueOf(500.00))
+        );
+
+        account.setBalance(new AccountBalance(BigDecimal.valueOf(500.00)));
+
+        assertThat(account.getBalance().value()).isEqualTo(BigDecimal.valueOf(500.00));
+        assertThat(account.getTransactions()).hasSize(1);
+        assertThat(account.getTransactions().getFirst().getAmount().value()).isEqualTo(BigDecimal.valueOf(500.00));
+    }
+
+    @Test
     void close_given_open_account_then_close_account() {
         var account = Account.from(
                 new AccountId(UUID.randomUUID()),
