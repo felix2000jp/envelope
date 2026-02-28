@@ -173,6 +173,7 @@ public class Account implements AggregateRoot<Account, AccountId> {
                 .filter(tr -> tr.getId().equals(transactionId))
                 .findFirst()
                 .orElseThrow(TransactionNotFoundException::new);
+
         var previousAmount = transaction.getAmount().value();
 
         if (amount != null) {

@@ -37,11 +37,7 @@ public class AccountService {
     private final AccountRepository accountRepository;
     private final AccountMapper accountMapper;
 
-    public AccountService(
-            SecurityService securityService,
-            AccountRepository accountRepository,
-            AccountMapper accountMapper
-    ) {
+    AccountService(SecurityService securityService, AccountRepository accountRepository, AccountMapper accountMapper) {
         this.securityService = securityService;
         this.accountRepository = accountRepository;
         this.accountMapper = accountMapper;
