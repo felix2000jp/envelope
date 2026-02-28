@@ -36,7 +36,7 @@ class AccountController {
 
     @PostMapping
     ResponseEntity<AccountDto> create(@Valid @RequestBody CreateAccountDto createAccountDto) {
-        var body = accountService.create(createAccountDto.name(), createAccountDto.initialBalance());
+        var body = accountService.create(createAccountDto);
         var location = URI.create("/api/accounts/" + body.id());
         return ResponseEntity.created(location).body(body);
     }

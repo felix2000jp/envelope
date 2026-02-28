@@ -72,7 +72,7 @@ class AccountControllerTest {
         var requestBody = jsonMapper.writeValueAsString(createAccountDto);
         var expectedResponse = jsonMapper.writeValueAsString(newAccountDto);
 
-        when(accountService.create(name, balance)).thenReturn(newAccountDto);
+        when(accountService.create(createAccountDto)).thenReturn(newAccountDto);
 
         var request = post("/api/accounts")
                 .contentType(APPLICATION_JSON)

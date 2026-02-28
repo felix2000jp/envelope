@@ -1,6 +1,7 @@
 package dev.felix2000jp.envelope.accounts.application;
 
 import dev.felix2000jp.envelope.accounts.application.dtos.AddTransactionDto;
+import dev.felix2000jp.envelope.accounts.application.dtos.CreateAccountDto;
 import dev.felix2000jp.envelope.accounts.application.dtos.UpdateAccountDto;
 import dev.felix2000jp.envelope.accounts.application.dtos.UpdateTransactionDto;
 import dev.felix2000jp.envelope.accounts.domain.Account;
@@ -98,10 +99,11 @@ class AccountServiceTest {
         var securityUser = new SecurityUser(UUID.randomUUID(), "username", "password", Set.of());
         var name = "New Account";
         var initialBalance = BigDecimal.valueOf(250.75);
+        var createAccountDto = new CreateAccountDto(name, initialBalance);
 
         when(securityService.loadUserFromSecurityContext()).thenReturn(securityUser);
 
-        var actual = accountService.create(name, initialBalance);
+        var actual = accountService.create(createAccountDto);
 
         verify(accountRepository).save(accountCaptor.capture());
         assertThat(accountCaptor.getValue().getUserId().value()).isEqualTo(securityUser.id());
@@ -121,10 +123,11 @@ class AccountServiceTest {
         var securityUser = new SecurityUser(UUID.randomUUID(), "username", "password", Set.of());
         var name = "Zero Account";
         var initialBalance = BigDecimal.ZERO;
+        var createAccountDto = new CreateAccountDto(name, initialBalance);
 
         when(securityService.loadUserFromSecurityContext()).thenReturn(securityUser);
 
-        var actual = accountService.create(name, initialBalance);
+        var actual = accountService.create(createAccountDto);
 
         verify(accountRepository).save(accountCaptor.capture());
         assertThat(accountCaptor.getValue().getUserId().value()).isEqualTo(securityUser.id());

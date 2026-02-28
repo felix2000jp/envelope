@@ -3,6 +3,7 @@ package dev.felix2000jp.envelope.accounts.application;
 import dev.felix2000jp.envelope.accounts.application.dtos.AccountDto;
 import dev.felix2000jp.envelope.accounts.application.dtos.AccountListDto;
 import dev.felix2000jp.envelope.accounts.application.dtos.AddTransactionDto;
+import dev.felix2000jp.envelope.accounts.application.dtos.CreateAccountDto;
 import dev.felix2000jp.envelope.accounts.application.dtos.TransactionDto;
 import dev.felix2000jp.envelope.accounts.application.dtos.TransactionListDto;
 import dev.felix2000jp.envelope.accounts.application.dtos.UpdateAccountDto;
@@ -52,13 +53,13 @@ public class AccountService {
     }
 
     @Transactional
-    public AccountDto create(String name, BigDecimal initialBalance) {
+    public AccountDto create(CreateAccountDto createAccountDto) {
         var user = securityService.loadUserFromSecurityContext();
         var account = Account.from(
                 new AccountId(UUID.randomUUID()),
                 new UserId(user.id()),
-                new AccountName(name),
-                new AccountBalance(initialBalance)
+                new AccountName(createAccountDto.name()),
+                new AccountBalance(createAccountDto.initialBalance())
         );
 
         accountRepository.save(account);
