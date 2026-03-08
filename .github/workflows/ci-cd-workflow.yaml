@@ -33,7 +33,7 @@ jobs:
           cp otel/*.jar artifacts/otel
           cp target/*.jar artifacts/target
       - name: Upload artifacts folder
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: artifacts
           path: artifacts
@@ -60,7 +60,7 @@ jobs:
             type=sha
             type=raw,value=latest
       - name: Download artifacts folder
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: artifacts
           path: .
