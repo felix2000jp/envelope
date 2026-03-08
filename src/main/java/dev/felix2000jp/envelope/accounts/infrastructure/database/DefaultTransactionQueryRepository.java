@@ -42,8 +42,8 @@ class DefaultTransactionQueryRepository implements TransactionQueryRepository {
         whereClauses.add("a.user_id = :userId");
 
         if (memoFilter != null) {
-            whereClauses.add("t.memo ILIKE :memo");
-            params.addValue("memo", "%" + memoFilter + "%");
+            whereClauses.add("t.memo ILIKE :memo ESCAPE E'\\\\'");
+            params.addValue("memo", "%" + escapeLikePattern(memoFilter) + "%");
         }
 
         if (query.cleared() != null) {
@@ -97,5 +97,12 @@ class DefaultTransactionQueryRepository implements TransactionQueryRepository {
         }
 
         return memo.trim();
+    }
+
+    private String escapeLikePattern(String value) {
+        return value
+                .replace("\\", "\\\\")
+                .replace("%", "\\%")
+                .replace("_", "\\_");
     }
 }

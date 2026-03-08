@@ -240,6 +240,22 @@ class DefaultTransactionQueryRepositoryIntegrationTest {
     }
 
     @Test
+    void findByAccountIdAndUserId_treatsMemoWildcardsAsLiteralCharacters() {
+        var query = new GetAccountTransactionsDto(50, "desc", null, null, null, "%", null);
+
+        var actual = transactionQueryRepository.findByAccountIdAndUserId(
+                ACCOUNT_ID,
+                USER_ID,
+                query,
+                TransactionQuerySortDirection.DESC,
+                null,
+                50
+        );
+
+        assertThat(actual).isEmpty();
+    }
+
+    @Test
     void findByAccountIdAndUserId_appliesClearedAndAmountFiltersAndLimit() {
         var query = new GetAccountTransactionsDto(50, "desc", null, new BigDecimal("15.00"), new BigDecimal("40.00"), null, true);
 

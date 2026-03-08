@@ -17,4 +17,16 @@ public enum TransactionQuerySortDirection {
             default -> throw new InvalidTransactionQueryException("Invalid sort direction. Use 'asc' or 'desc'");
         };
     }
+
+    public static TransactionQuerySortDirection fromStrict(String value) {
+        if (value == null || value.isBlank()) {
+            throw new InvalidTransactionQueryException("Invalid cursor format");
+        }
+
+        return switch (value.trim().toUpperCase()) {
+            case "ASC" -> ASC;
+            case "DESC" -> DESC;
+            default -> throw new InvalidTransactionQueryException("Invalid cursor format");
+        };
+    }
 }

@@ -33,7 +33,7 @@ public record TransactionQueryCursor(
 
             var date = LocalDate.parse(parts[0]);
             var transactionId = UUID.fromString(parts[1]);
-            var sort = TransactionQuerySortDirection.from(parts[2]);
+            var sort = TransactionQuerySortDirection.fromStrict(parts[2]);
 
             if (sort != expectedSort) {
                 throw new InvalidTransactionQueryException("Cursor sort does not match request sort");

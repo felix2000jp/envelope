@@ -3,7 +3,9 @@ package dev.felix2000jp.envelope.accounts.application.queries;
 import dev.felix2000jp.envelope.accounts.application.exceptions.InvalidTransactionQueryException;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.util.Base64;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,5 +54,15 @@ class TransactionQueryCursorTest {
         assertThatThrownBy(() -> TransactionQueryCursor.decode(encoded, TransactionQuerySortDirection.ASC))
                 .isInstanceOf(InvalidTransactionQueryException.class)
                 .hasMessage("Cursor sort does not match request sort");
+    }
+
+    @Test
+    void decode_givenBlankSortInCursor_throwsInvalidTransactionQueryException() {
+        var raw = "2026-03-08|00000000-0000-0000-0000-000000000001|";
+        var encoded = Base64.getUrlEncoder().withoutPadding().encodeToString(raw.getBytes(StandardCharsets.UTF_8));
+
+        assertThatThrownBy(() -> TransactionQueryCursor.decode(encoded, TransactionQuerySortDirection.DESC))
+                .isInstanceOf(InvalidTransactionQueryException.class)
+                .hasMessage("Invalid cursor format");
     }
 }
