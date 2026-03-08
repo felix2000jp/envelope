@@ -1,10 +1,10 @@
 package dev.felix2000jp.envelope.appusers.infrastructure.security;
 
 import dev.felix2000jp.envelope.appusers.domain.AppuserRepository;
-import dev.felix2000jp.envelope.appusers.domain.exceptions.AppuserNotFoundException;
 import dev.felix2000jp.envelope.appusers.domain.valueobjects.Username;
 import dev.felix2000jp.envelope.system.security.SecurityScope;
 import dev.felix2000jp.envelope.system.security.SecurityUser;
+import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,12 +22,12 @@ class AppuserUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public @NonNull UserDetails loadUserByUsername(@NonNull String username) throws UsernameNotFoundException {
         var usernameValueObject = new Username(username);
 
         var appuser = appuserRepository
                 .findByUsername(usernameValueObject)
-                .orElseThrow(AppuserNotFoundException::new);
+                .orElseThrow(() -> new UsernameNotFoundException("Appuser could not be found"));
 
         return new SecurityUser(
                 appuser.getId().value(),
