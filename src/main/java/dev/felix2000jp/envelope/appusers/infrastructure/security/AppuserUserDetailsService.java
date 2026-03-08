@@ -27,7 +27,7 @@ class AppuserUserDetailsService implements UserDetailsService {
 
         var appuser = appuserRepository
                 .findByUsername(usernameValueObject)
-                .orElseThrow(() -> new UsernameNotFoundException("Appuser could not be found"));
+                .orElseThrow(() -> new UsernameNotFoundException("Username could not be found"));
 
         return new SecurityUser(
                 appuser.getId().value(),
