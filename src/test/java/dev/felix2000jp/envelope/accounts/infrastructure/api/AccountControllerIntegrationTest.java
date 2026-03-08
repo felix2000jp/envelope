@@ -49,8 +49,28 @@ class AccountControllerIntegrationTest {
                 new AccountBalance(new BigDecimal("1000.00"))
         );
 
-        account.addTransaction(new TransactionAmount(new BigDecimal("100.00")), new TransactionMemo("Test transaction 1"), true);
-        account.addTransaction(new TransactionAmount(new BigDecimal("-100.00")), new TransactionMemo("Test transaction 2"), false);
+        account.addTransaction(
+                new TransactionAmount(new BigDecimal("100.00")),
+                new TransactionMemo("Test transaction 1"),
+                true
+        );
+        account.addTransaction(
+                new TransactionAmount(new BigDecimal("-100.00")),
+                new TransactionMemo("Test transaction 2"),
+                false
+        );
+        account.addTransaction(
+                new TransactionAmount(new BigDecimal("250.00")),
+                new TransactionDate(LocalDate.of(2024, 3, 1)),
+                new TransactionMemo("Groceries"),
+                true
+        );
+        account.addTransaction(
+                new TransactionAmount(new BigDecimal("-40.00")),
+                new TransactionDate(LocalDate.of(2024, 3, 5)),
+                new TransactionMemo("Coffee shop"),
+                false
+        );
 
         accountRepository.save(account);
         token = securityService.generateToken(
@@ -145,12 +165,12 @@ class AccountControllerIntegrationTest {
         assertThat(getAccountByIdEntity.getResponseBody()).isNotNull();
         assertThat(getAccountByIdEntity.getResponseBody().id()).isEqualTo(account.getId().value());
         assertThat(getAccountByIdEntity.getResponseBody().name()).isEqualTo("Test Account");
-        assertThat(getAccountByIdEntity.getResponseBody().balance()).isEqualTo(new BigDecimal("1100.00"));
+        assertThat(getAccountByIdEntity.getResponseBody().balance()).isEqualTo(new BigDecimal("1350.00"));
         assertThat(getAccountByIdEntity.getResponseBody().closed()).isFalse();
     }
 
     @Test
-    void getAccountTransactions_then_return_transaction_list() {
+    void getAccountTransactions_then_return_transaction_slice() {
         var getAccountTransactionsEntity = restTestClient
                 .get()
                 .uri("/api/accounts/" + account.getId().value() + "/transactions")
@@ -158,29 +178,72 @@ class AccountControllerIntegrationTest {
                 .exchange()
                 .expectStatus()
                 .isOk()
-                .expectBody(TransactionListDto.class)
+                .expectBody(TransactionSliceDto.class)
                 .returnResult();
 
         assertThat(getAccountTransactionsEntity.getResponseBody()).isNotNull();
-        assertThat(getAccountTransactionsEntity.getResponseBody().total()).isEqualTo(3);
-        assertThat(getAccountTransactionsEntity.getResponseBody().transactions()).hasSize(3);
+        assertThat(getAccountTransactionsEntity.getResponseBody().items()).hasSize(5);
+        assertThat(getAccountTransactionsEntity.getResponseBody().hasMore()).isFalse();
+        assertThat(getAccountTransactionsEntity.getResponseBody().nextCursor()).isNull();
+    }
 
-        var transactions = getAccountTransactionsEntity.getResponseBody().transactions();
+    @Test
+    void getAccountTransactions_given_limit_then_return_next_cursor() {
+        var firstSliceEntity = restTestClient
+                .get()
+                .uri("/api/accounts/" + account.getId().value() + "/transactions?limit=2")
+                .headers(h -> h.setBearerAuth(token))
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody(TransactionSliceDto.class)
+                .returnResult();
 
-        var initialTransaction = transactions.getFirst();
-        assertThat(initialTransaction.amount()).isEqualTo(new BigDecimal("1000.00"));
-        assertThat(initialTransaction.memo()).isEmpty();
-        assertThat(initialTransaction.cleared()).isTrue();
+        assertThat(firstSliceEntity.getResponseBody()).isNotNull();
+        assertThat(firstSliceEntity.getResponseBody().items()).hasSize(2);
+        assertThat(firstSliceEntity.getResponseBody().hasMore()).isTrue();
+        assertThat(firstSliceEntity.getResponseBody().nextCursor()).isNotBlank();
 
-        var firstTransaction = transactions.get(1);
-        assertThat(firstTransaction.amount()).isEqualTo(new BigDecimal("100.00"));
-        assertThat(firstTransaction.memo()).isEqualTo("Test transaction 1");
-        assertThat(firstTransaction.cleared()).isTrue();
+        var cursor = firstSliceEntity.getResponseBody().nextCursor();
 
-        var secondTransaction = transactions.get(2);
-        assertThat(secondTransaction.amount()).isEqualTo(new BigDecimal("-100.00"));
-        assertThat(secondTransaction.memo()).isEqualTo("Test transaction 2");
-        assertThat(secondTransaction.cleared()).isFalse();
+        var secondSliceEntity = restTestClient
+                .get()
+                .uri("/api/accounts/" + account.getId().value() + "/transactions?limit=2&cursor=" + cursor)
+                .headers(h -> h.setBearerAuth(token))
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody(TransactionSliceDto.class)
+                .returnResult();
+
+        assertThat(secondSliceEntity.getResponseBody()).isNotNull();
+        assertThat(secondSliceEntity.getResponseBody().items()).hasSize(2);
+
+        var firstIds = firstSliceEntity.getResponseBody().items().stream().map(TransactionDto::id).toList();
+        var secondIds = secondSliceEntity.getResponseBody().items().stream().map(TransactionDto::id).toList();
+
+        assertThat(firstIds).doesNotContainAnyElementsOf(secondIds);
+    }
+
+    @Test
+    void getAccountTransactions_given_filters_then_return_filtered_transactions() {
+        var filteredSliceEntity = restTestClient
+                .get()
+                .uri("/api/accounts/" + account.getId().value() + "/transactions?memo=coffee&cleared=false&minAmount=-50&maxAmount=0&sort=asc")
+                .headers(h -> h.setBearerAuth(token))
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody(TransactionSliceDto.class)
+                .returnResult();
+
+        assertThat(filteredSliceEntity.getResponseBody()).isNotNull();
+        assertThat(filteredSliceEntity.getResponseBody().items()).hasSize(1);
+
+        var transaction = filteredSliceEntity.getResponseBody().items().getFirst();
+        assertThat(transaction.memo()).isEqualTo("Coffee shop");
+        assertThat(transaction.cleared()).isFalse();
+        assertThat(transaction.amount()).isEqualTo(new BigDecimal("-40.00"));
     }
 
     @Test
@@ -208,7 +271,7 @@ class AccountControllerIntegrationTest {
 
         var updatedAccount = accountRepository.findByIdAndUserId(account.getId(), account.getUserId());
         assertThat(updatedAccount).isPresent();
-        assertThat(updatedAccount.get().getBalance().value()).isEqualTo(new BigDecimal("1300.00"));
+        assertThat(updatedAccount.get().getBalance().value()).isEqualTo(new BigDecimal("1550.00"));
     }
 
     @Test
@@ -291,7 +354,7 @@ class AccountControllerIntegrationTest {
 
         var updatedAccount = accountRepository.findWithTransactionsByIdAndUserId(account.getId(), account.getUserId());
         assertThat(updatedAccount).isPresent();
-        assertThat(updatedAccount.get().getTransactions()).hasSize(3);
+        assertThat(updatedAccount.get().getTransactions()).hasSize(5);
 
         var clearedTransaction = updatedAccount.get().getTransactions().stream()
                 .filter(t -> t.getId().value().equals(transactionId))
@@ -320,7 +383,7 @@ class AccountControllerIntegrationTest {
 
         var updatedAccount = accountRepository.findWithTransactionsByIdAndUserId(account.getId(), account.getUserId());
         assertThat(updatedAccount).isPresent();
-        assertThat(updatedAccount.get().getTransactions()).hasSize(3);
+        assertThat(updatedAccount.get().getTransactions()).hasSize(5);
 
         var unclearedTransaction = updatedAccount.get().getTransactions().stream()
                 .filter(t -> t.getId().value().equals(transactionId))

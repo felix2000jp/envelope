@@ -3,6 +3,8 @@ package dev.felix2000jp.envelope.accounts.infrastructure.api;
 import tools.jackson.databind.json.JsonMapper;
 import dev.felix2000jp.envelope.accounts.application.AccountService;
 import dev.felix2000jp.envelope.accounts.application.dtos.*;
+import dev.felix2000jp.envelope.accounts.application.exceptions.InvalidTransactionQueryException;
+import dev.felix2000jp.envelope.accounts.application.queries.TransactionQueryService;
 import dev.felix2000jp.envelope.accounts.domain.exceptions.AccountNotFoundException;
 import dev.felix2000jp.envelope.accounts.domain.exceptions.TransactionNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +26,7 @@ import java.util.stream.Stream;
 
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -36,6 +39,8 @@ class AccountControllerTest {
 
     @MockitoBean
     private AccountService accountService;
+    @MockitoBean
+    private TransactionQueryService transactionQueryService;
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -265,7 +270,7 @@ class AccountControllerTest {
     }
 
     @Test
-    void getAccountTransactions_then_return_200_and_transaction_list() throws Exception {
+    void getAccountTransactions_then_return_200_and_transaction_slice() throws Exception {
         var transactionDto1 = new TransactionDto(
                 UUID.randomUUID(),
                 new BigDecimal("100.00"),
@@ -287,17 +292,57 @@ class AccountControllerTest {
                 "Withdrawal",
                 false
         );
-        var transactionListDto = new TransactionListDto(3, List.of(transactionDto1, transactionDto2, transactionDto3));
+        var transactionSliceDto = new TransactionSliceDto(List.of(transactionDto1, transactionDto2, transactionDto3), "next-cursor", true);
 
-        var expectedResponse = jsonMapper.writeValueAsString(transactionListDto);
+        var expectedResponse = jsonMapper.writeValueAsString(transactionSliceDto);
 
-        when(accountService.getAccountTransactions(accountDto.id())).thenReturn(transactionListDto);
+        when(transactionQueryService.getAccountTransactions(accountDto.id(), new GetAccountTransactionsDto(30, "desc", null, null, null, null, null))).thenReturn(transactionSliceDto);
 
         var request = get("/api/accounts/{id}/transactions", accountDto.id());
         mockMvc
                 .perform(request.with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedResponse));
+
+        verify(transactionQueryService).getAccountTransactions(
+                accountDto.id(),
+                new GetAccountTransactionsDto(30, "desc", null, null, null, null, null)
+        );
+    }
+
+    @Test
+    void getAccountTransactions_given_query_params_then_return_200_and_response_format() throws Exception {
+        var transactionDto = new TransactionDto(
+                UUID.fromString("00000000-0000-0000-0000-000000000111"),
+                new BigDecimal("40.00"),
+                LocalDate.of(2026, 3, 8),
+                "Coffee shop",
+                false
+        );
+        var response = new TransactionSliceDto(List.of(transactionDto), "next-cursor", true);
+
+        when(transactionQueryService.getAccountTransactions(
+                accountDto.id(),
+                new GetAccountTransactionsDto(10, "asc", "encoded-cursor", new BigDecimal("10"), new BigDecimal("100"), "coffee", false)
+        )).thenReturn(response);
+
+        var request = get(
+                "/api/accounts/{id}/transactions?limit=10&sort=asc&cursor=encoded-cursor&minAmount=10&maxAmount=100&memo=coffee&cleared=false",
+                accountDto.id()
+        );
+
+        mockMvc
+                .perform(request.with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.items").isArray())
+                .andExpect(jsonPath("$.items.length()").value(1))
+                .andExpect(jsonPath("$.items[0].id").value("00000000-0000-0000-0000-000000000111"))
+                .andExpect(jsonPath("$.items[0].amount").value(40.00))
+                .andExpect(jsonPath("$.items[0].dateOfTransaction").value("2026-03-08"))
+                .andExpect(jsonPath("$.items[0].memo").value("Coffee shop"))
+                .andExpect(jsonPath("$.items[0].cleared").value(false))
+                .andExpect(jsonPath("$.nextCursor").value("next-cursor"))
+                .andExpect(jsonPath("$.hasMore").value(true));
     }
 
     @Test
@@ -305,7 +350,7 @@ class AccountControllerTest {
         var accountId = UUID.randomUUID();
         var exception = new AccountNotFoundException();
 
-        when(accountService.getAccountTransactions(accountId)).thenThrow(exception);
+        when(transactionQueryService.getAccountTransactions(accountId, new GetAccountTransactionsDto(30, "desc", null, null, null, null, null))).thenThrow(exception);
 
         var request = get("/api/accounts/{id}/transactions", accountId);
         mockMvc
@@ -314,6 +359,22 @@ class AccountControllerTest {
                 .andExpect(jsonPath("$.title").value("Not Found"))
                 .andExpect(jsonPath("$.detail").value(exception.getMessage()))
                 .andExpect(jsonPath("$.status").value(404));
+    }
+
+    @Test
+    void getAccountTransactions_given_invalid_amount_range_then_return_400() throws Exception {
+        var accountId = UUID.randomUUID();
+        var exception = new InvalidTransactionQueryException("minAmount must be less than or equal to maxAmount");
+
+        when(transactionQueryService.getAccountTransactions(accountId, new GetAccountTransactionsDto(30, "desc", null, new BigDecimal("20"), new BigDecimal("10"), null, null))).thenThrow(exception);
+
+        var request = get("/api/accounts/{id}/transactions?minAmount=20&maxAmount=10", accountId);
+        mockMvc
+                .perform(request.with(csrf()))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.title").value("Bad Request"))
+                .andExpect(jsonPath("$.detail").value(exception.getMessage()))
+                .andExpect(jsonPath("$.status").value(400));
     }
 
     @Test

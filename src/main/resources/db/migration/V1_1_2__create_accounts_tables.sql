@@ -21,3 +21,5 @@ CREATE TABLE IF NOT EXISTS transaction
 );
 
 CREATE INDEX IF NOT EXISTS idx_transaction_account_id ON transaction (account_id);
+CREATE INDEX IF NOT EXISTS idx_transaction_account_date_id_asc ON transaction (account_id, date_of_transaction ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_transaction_account_date_id_desc ON transaction (account_id, date_of_transaction DESC, id DESC);

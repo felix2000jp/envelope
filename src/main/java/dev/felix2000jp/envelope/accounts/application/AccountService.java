@@ -5,7 +5,6 @@ import dev.felix2000jp.envelope.accounts.application.dtos.AccountListDto;
 import dev.felix2000jp.envelope.accounts.application.dtos.AddTransactionDto;
 import dev.felix2000jp.envelope.accounts.application.dtos.CreateAccountDto;
 import dev.felix2000jp.envelope.accounts.application.dtos.TransactionDto;
-import dev.felix2000jp.envelope.accounts.application.dtos.TransactionListDto;
 import dev.felix2000jp.envelope.accounts.application.dtos.UpdateAccountDto;
 import dev.felix2000jp.envelope.accounts.application.dtos.UpdateTransactionDto;
 import dev.felix2000jp.envelope.accounts.domain.Account;
@@ -121,16 +120,6 @@ public class AccountService {
         account.open();
         accountRepository.save(account);
         log.info("Account opened with id {} for user {}", account.getId().value(), user.id());
-    }
-
-    @Transactional(readOnly = true)
-    public TransactionListDto getAccountTransactions(UUID id) {
-        var user = securityService.loadUserFromSecurityContext();
-        var account = accountRepository
-                .findByIdAndUserId(new AccountId(id), new UserId(user.id()))
-                .orElseThrow(AccountNotFoundException::new);
-
-        return accountMapper.toTransactionListDto(account.getTransactions());
     }
 
     @Transactional
