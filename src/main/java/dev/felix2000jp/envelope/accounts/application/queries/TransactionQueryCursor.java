@@ -14,7 +14,7 @@ public record TransactionQueryCursor(
 ) {
 
     public static String encode(TransactionQueryCursor cursor) {
-        var rawCursor = "%s|%s|%s".formatted(cursor.dateOfTransaction(), cursor.transactionId(), cursor.sort());
+        var rawCursor = "%s|%s|%s".formatted(cursor.transactionId(), cursor.dateOfTransaction(), cursor.sort());
         return Base64.getUrlEncoder().withoutPadding().encodeToString(rawCursor.getBytes(StandardCharsets.UTF_8));
     }
 
@@ -31,8 +31,8 @@ public record TransactionQueryCursor(
                 throw new InvalidTransactionQueryException("Invalid cursor format");
             }
 
-            var date = LocalDate.parse(parts[0]);
-            var transactionId = UUID.fromString(parts[1]);
+            var transactionId = UUID.fromString(parts[0]);
+            var date = LocalDate.parse(parts[1]);
             var sort = TransactionQuerySortDirection.fromStrict(parts[2]);
 
             if (sort != expectedSort) {

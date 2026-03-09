@@ -58,7 +58,7 @@ class TransactionQueryCursorTest {
 
     @Test
     void decode_givenBlankSortInCursor_throwsInvalidTransactionQueryException() {
-        var raw = "2026-03-08|00000000-0000-0000-0000-000000000001|";
+        var raw = "00000000-0000-0000-0000-000000000001|2026-03-08|";
         var encoded = Base64.getUrlEncoder().withoutPadding().encodeToString(raw.getBytes(StandardCharsets.UTF_8));
 
         assertThatThrownBy(() -> TransactionQueryCursor.decode(encoded, TransactionQuerySortDirection.DESC))

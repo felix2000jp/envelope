@@ -82,7 +82,7 @@ class DefaultTransactionQueryRepository implements TransactionQueryRepository {
                 LIMIT :limit
                 """.formatted(String.join(" AND ", whereClauses), direction, direction);
 
-        return namedParameterJdbcTemplate.query(sql, params, (rs, rowNum) -> new TransactionDto(
+        return namedParameterJdbcTemplate.query(sql, params, (rs, _) -> new TransactionDto(
                 rs.getObject("id", UUID.class),
                 rs.getBigDecimal("amount"),
                 rs.getObject("date_of_transaction", java.time.LocalDate.class),
