@@ -5,7 +5,7 @@ import dev.felix2000jp.envelope.accounts.application.dtos.AccountDto;
 import dev.felix2000jp.envelope.accounts.application.dtos.AccountListDto;
 import dev.felix2000jp.envelope.accounts.application.dtos.AddTransactionDto;
 import dev.felix2000jp.envelope.accounts.application.dtos.CreateAccountDto;
-import dev.felix2000jp.envelope.accounts.application.dtos.GetAccountTransactionsDto;
+import dev.felix2000jp.envelope.accounts.application.dtos.GetTransactionsDto;
 import dev.felix2000jp.envelope.accounts.application.dtos.TransactionDto;
 import dev.felix2000jp.envelope.accounts.application.dtos.TransactionSliceDto;
 import dev.felix2000jp.envelope.accounts.application.dtos.UpdateAccountDto;
@@ -73,7 +73,7 @@ class AccountController {
     }
 
     @GetMapping("/{id}/transactions")
-    ResponseEntity<TransactionSliceDto> getAccountTransactions(
+    ResponseEntity<TransactionSliceDto> getTransactions(
             @PathVariable UUID id,
             @RequestParam(required = false, defaultValue = "30") @Min(1) @Max(100) int limit,
             @RequestParam(required = false, defaultValue = "desc") String sort,
@@ -83,8 +83,8 @@ class AccountController {
             @RequestParam(required = false) String memo,
             @RequestParam(required = false) Boolean cleared
     ) {
-        var query = new GetAccountTransactionsDto(limit, sort, cursor, minAmount, maxAmount, memo, cleared);
-        var body = transactionQueryService.getAccountTransactions(id, query);
+        var query = new GetTransactionsDto(limit, sort, cursor, minAmount, maxAmount, memo, cleared);
+        var body = transactionQueryService.getTransactions(id, query);
         return ResponseEntity.ok(body);
     }
 

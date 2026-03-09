@@ -1,6 +1,6 @@
 package dev.felix2000jp.envelope.accounts.application.queries;
 
-import dev.felix2000jp.envelope.accounts.application.dtos.GetAccountTransactionsDto;
+import dev.felix2000jp.envelope.accounts.application.dtos.GetTransactionsDto;
 import dev.felix2000jp.envelope.accounts.application.dtos.TransactionDto;
 
 import java.util.List;
@@ -11,7 +11,7 @@ public interface TransactionQueryRepository {
     List<TransactionDto> findByAccountIdAndUserId(
             UUID accountId,
             UUID userId,
-            GetAccountTransactionsDto query,
+            GetTransactionsDto query,
             TransactionQuerySortDirection sort,
             TransactionQueryCursor cursor,
             int limit

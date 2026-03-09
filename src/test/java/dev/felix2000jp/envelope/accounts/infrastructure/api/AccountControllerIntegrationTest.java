@@ -170,8 +170,8 @@ class AccountControllerIntegrationTest {
     }
 
     @Test
-    void getAccountTransactions_then_return_transaction_slice() {
-        var getAccountTransactionsEntity = restTestClient
+    void getTransactions_then_return_transaction_slice() {
+        var getTransactionsEntity = restTestClient
                 .get()
                 .uri("/api/accounts/" + account.getId().value() + "/transactions")
                 .headers(h -> h.setBearerAuth(token))
@@ -181,14 +181,14 @@ class AccountControllerIntegrationTest {
                 .expectBody(TransactionSliceDto.class)
                 .returnResult();
 
-        assertThat(getAccountTransactionsEntity.getResponseBody()).isNotNull();
-        assertThat(getAccountTransactionsEntity.getResponseBody().items()).hasSize(5);
-        assertThat(getAccountTransactionsEntity.getResponseBody().hasMore()).isFalse();
-        assertThat(getAccountTransactionsEntity.getResponseBody().nextCursor()).isNull();
+        assertThat(getTransactionsEntity.getResponseBody()).isNotNull();
+        assertThat(getTransactionsEntity.getResponseBody().items()).hasSize(5);
+        assertThat(getTransactionsEntity.getResponseBody().hasMore()).isFalse();
+        assertThat(getTransactionsEntity.getResponseBody().nextCursor()).isNull();
     }
 
     @Test
-    void getAccountTransactions_given_limit_then_return_next_cursor() {
+    void getTransactions_given_limit_then_return_next_cursor() {
         var firstSliceEntity = restTestClient
                 .get()
                 .uri("/api/accounts/" + account.getId().value() + "/transactions?limit=2")
@@ -226,7 +226,7 @@ class AccountControllerIntegrationTest {
     }
 
     @Test
-    void getAccountTransactions_given_filters_then_return_filtered_transactions() {
+    void getTransactions_given_filters_then_return_filtered_transactions() {
         var filteredSliceEntity = restTestClient
                 .get()
                 .uri("/api/accounts/" + account.getId().value() + "/transactions?memo=coffee&cleared=false&minAmount=-50&maxAmount=0&sort=asc")

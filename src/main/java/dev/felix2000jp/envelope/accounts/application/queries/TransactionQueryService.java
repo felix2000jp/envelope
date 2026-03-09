@@ -1,6 +1,6 @@
 package dev.felix2000jp.envelope.accounts.application.queries;
 
-import dev.felix2000jp.envelope.accounts.application.dtos.GetAccountTransactionsDto;
+import dev.felix2000jp.envelope.accounts.application.dtos.GetTransactionsDto;
 import dev.felix2000jp.envelope.accounts.application.dtos.TransactionSliceDto;
 import dev.felix2000jp.envelope.accounts.application.exceptions.InvalidTransactionQueryException;
 import dev.felix2000jp.envelope.accounts.domain.AccountRepository;
@@ -33,7 +33,7 @@ public class TransactionQueryService {
     }
 
     @Transactional(readOnly = true)
-    public TransactionSliceDto getAccountTransactions(UUID accountId, GetAccountTransactionsDto request) {
+    public TransactionSliceDto getTransactions(UUID accountId, GetTransactionsDto request) {
         validateAmountRange(request);
 
         var user = securityService.loadUserFromSecurityContext();
@@ -77,7 +77,7 @@ public class TransactionQueryService {
         return limit;
     }
 
-    private void validateAmountRange(GetAccountTransactionsDto request) {
+    private void validateAmountRange(GetTransactionsDto request) {
         if (request.minAmount() != null && request.maxAmount() != null && request.minAmount().compareTo(request.maxAmount()) > 0) {
             throw new InvalidTransactionQueryException("minAmount must be less than or equal to maxAmount");
         }

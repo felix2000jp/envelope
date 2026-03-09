@@ -1,6 +1,6 @@
 package dev.felix2000jp.envelope.accounts.infrastructure.database;
 
-import dev.felix2000jp.envelope.accounts.application.dtos.GetAccountTransactionsDto;
+import dev.felix2000jp.envelope.accounts.application.dtos.GetTransactionsDto;
 import dev.felix2000jp.envelope.accounts.application.dtos.TransactionDto;
 import dev.felix2000jp.envelope.accounts.application.queries.TransactionQueryCursor;
 import dev.felix2000jp.envelope.accounts.application.queries.TransactionQueryRepository;
@@ -26,7 +26,7 @@ class DefaultTransactionQueryRepository implements TransactionQueryRepository {
     public List<TransactionDto> findByAccountIdAndUserId(
             UUID accountId,
             UUID userId,
-            GetAccountTransactionsDto query,
+            GetTransactionsDto query,
             TransactionQuerySortDirection sort,
             TransactionQueryCursor cursor,
             int limit

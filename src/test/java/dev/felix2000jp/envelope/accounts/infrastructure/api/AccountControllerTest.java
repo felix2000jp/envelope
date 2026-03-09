@@ -270,7 +270,7 @@ class AccountControllerTest {
     }
 
     @Test
-    void getAccountTransactions_then_return_200_and_transaction_slice() throws Exception {
+    void getTransactions_then_return_200_and_transaction_slice() throws Exception {
         var transactionDto1 = new TransactionDto(
                 UUID.randomUUID(),
                 new BigDecimal("100.00"),
@@ -296,7 +296,7 @@ class AccountControllerTest {
 
         var expectedResponse = jsonMapper.writeValueAsString(transactionSliceDto);
 
-        when(transactionQueryService.getAccountTransactions(accountDto.id(), new GetAccountTransactionsDto(30, "desc", null, null, null, null, null))).thenReturn(transactionSliceDto);
+        when(transactionQueryService.getTransactions(accountDto.id(), new GetTransactionsDto(30, "desc", null, null, null, null, null))).thenReturn(transactionSliceDto);
 
         var request = get("/api/accounts/{id}/transactions", accountDto.id());
         mockMvc
@@ -304,14 +304,14 @@ class AccountControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedResponse));
 
-        verify(transactionQueryService).getAccountTransactions(
+        verify(transactionQueryService).getTransactions(
                 accountDto.id(),
-                new GetAccountTransactionsDto(30, "desc", null, null, null, null, null)
+                new GetTransactionsDto(30, "desc", null, null, null, null, null)
         );
     }
 
     @Test
-    void getAccountTransactions_given_query_params_then_return_200_and_response_format() throws Exception {
+    void getTransactions_given_query_params_then_return_200_and_response_format() throws Exception {
         var transactionDto = new TransactionDto(
                 UUID.fromString("00000000-0000-0000-0000-000000000111"),
                 new BigDecimal("40.00"),
@@ -321,9 +321,9 @@ class AccountControllerTest {
         );
         var response = new TransactionSliceDto(List.of(transactionDto), "next-cursor", true);
 
-        when(transactionQueryService.getAccountTransactions(
+        when(transactionQueryService.getTransactions(
                 accountDto.id(),
-                new GetAccountTransactionsDto(10, "asc", "encoded-cursor", new BigDecimal("10"), new BigDecimal("100"), "coffee", false)
+                new GetTransactionsDto(10, "asc", "encoded-cursor", new BigDecimal("10"), new BigDecimal("100"), "coffee", false)
         )).thenReturn(response);
 
         var request = get(
@@ -346,11 +346,11 @@ class AccountControllerTest {
     }
 
     @Test
-    void getAccountTransactions_given_account_not_found_then_return_404() throws Exception {
+    void getTransactions_given_account_not_found_then_return_404() throws Exception {
         var accountId = UUID.randomUUID();
         var exception = new AccountNotFoundException();
 
-        when(transactionQueryService.getAccountTransactions(accountId, new GetAccountTransactionsDto(30, "desc", null, null, null, null, null))).thenThrow(exception);
+        when(transactionQueryService.getTransactions(accountId, new GetTransactionsDto(30, "desc", null, null, null, null, null))).thenThrow(exception);
 
         var request = get("/api/accounts/{id}/transactions", accountId);
         mockMvc
@@ -362,11 +362,11 @@ class AccountControllerTest {
     }
 
     @Test
-    void getAccountTransactions_given_invalid_amount_range_then_return_400() throws Exception {
+    void getTransactions_given_invalid_amount_range_then_return_400() throws Exception {
         var accountId = UUID.randomUUID();
         var exception = new InvalidTransactionQueryException("minAmount must be less than or equal to maxAmount");
 
-        when(transactionQueryService.getAccountTransactions(accountId, new GetAccountTransactionsDto(30, "desc", null, new BigDecimal("20"), new BigDecimal("10"), null, null))).thenThrow(exception);
+        when(transactionQueryService.getTransactions(accountId, new GetTransactionsDto(30, "desc", null, new BigDecimal("20"), new BigDecimal("10"), null, null))).thenThrow(exception);
 
         var request = get("/api/accounts/{id}/transactions?minAmount=20&maxAmount=10", accountId);
         mockMvc

@@ -1,7 +1,7 @@
 package dev.felix2000jp.envelope.accounts.infrastructure.database;
 
 import dev.felix2000jp.envelope.TestcontainersConfiguration;
-import dev.felix2000jp.envelope.accounts.application.dtos.GetAccountTransactionsDto;
+import dev.felix2000jp.envelope.accounts.application.dtos.GetTransactionsDto;
 import dev.felix2000jp.envelope.accounts.application.queries.TransactionQueryCursor;
 import dev.felix2000jp.envelope.accounts.application.queries.TransactionQueryRepository;
 import dev.felix2000jp.envelope.accounts.application.queries.TransactionQuerySortDirection;
@@ -118,7 +118,7 @@ class DefaultTransactionQueryRepositoryIntegrationTest {
 
     @Test
     void findByAccountIdAndUserId_returnsOnlyRequestedAccountAndUserTransactions() {
-        var query = new GetAccountTransactionsDto(50, "desc", null, null, null, null, null);
+        var query = new GetTransactionsDto(50, "desc", null, null, null, null, null);
 
         var actual = transactionQueryRepository.findByAccountIdAndUserId(
                 ACCOUNT_ID,
@@ -135,7 +135,7 @@ class DefaultTransactionQueryRepositoryIntegrationTest {
 
     @Test
     void findByAccountIdAndUserId_sortsByDateThenId_forAscAndDesc() {
-        var query = new GetAccountTransactionsDto(50, "desc", null, null, null, null, null);
+        var query = new GetTransactionsDto(50, "desc", null, null, null, null, null);
 
         var desc = transactionQueryRepository.findByAccountIdAndUserId(
                 ACCOUNT_ID,
@@ -186,7 +186,7 @@ class DefaultTransactionQueryRepositoryIntegrationTest {
                 LocalDate.of(2024, 3, 10),
                 TransactionQuerySortDirection.ASC
         );
-        var query = new GetAccountTransactionsDto(50, "desc", null, null, null, null, null);
+        var query = new GetTransactionsDto(50, "desc", null, null, null, null, null);
 
         var desc = transactionQueryRepository.findByAccountIdAndUserId(
                 ACCOUNT_ID,
@@ -221,7 +221,7 @@ class DefaultTransactionQueryRepositoryIntegrationTest {
 
     @Test
     void findByAccountIdAndUserId_appliesMemoFilter_caseInsensitiveAndTrimmed() {
-        var query = new GetAccountTransactionsDto(50, "desc", null, null, null, "  CoFfEe ", null);
+        var query = new GetTransactionsDto(50, "desc", null, null, null, "  CoFfEe ", null);
 
         var actual = transactionQueryRepository.findByAccountIdAndUserId(
                 ACCOUNT_ID,
@@ -241,7 +241,7 @@ class DefaultTransactionQueryRepositoryIntegrationTest {
 
     @Test
     void findByAccountIdAndUserId_treatsMemoWildcardsAsLiteralCharacters() {
-        var query = new GetAccountTransactionsDto(50, "desc", null, null, null, "%", null);
+        var query = new GetTransactionsDto(50, "desc", null, null, null, "%", null);
 
         var actual = transactionQueryRepository.findByAccountIdAndUserId(
                 ACCOUNT_ID,
@@ -257,7 +257,7 @@ class DefaultTransactionQueryRepositoryIntegrationTest {
 
     @Test
     void findByAccountIdAndUserId_appliesClearedAndAmountFiltersAndLimit() {
-        var query = new GetAccountTransactionsDto(50, "desc", null, new BigDecimal("15.00"), new BigDecimal("40.00"), null, true);
+        var query = new GetTransactionsDto(50, "desc", null, new BigDecimal("15.00"), new BigDecimal("40.00"), null, true);
 
         var filtered = transactionQueryRepository.findByAccountIdAndUserId(
                 ACCOUNT_ID,
