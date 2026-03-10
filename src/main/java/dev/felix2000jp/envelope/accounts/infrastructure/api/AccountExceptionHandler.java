@@ -1,5 +1,6 @@
 package dev.felix2000jp.envelope.accounts.infrastructure.api;
 
+import dev.felix2000jp.envelope.accounts.application.exceptions.InvalidTransactionQueryException;
 import dev.felix2000jp.envelope.accounts.domain.exceptions.AccountNotFoundException;
 import dev.felix2000jp.envelope.accounts.domain.exceptions.TransactionNotFoundException;
 import org.slf4j.Logger;
@@ -27,6 +28,14 @@ class AccountExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(TransactionNotFoundException.class)
     ResponseEntity<ProblemDetail> handleTransactionNotFoundException(TransactionNotFoundException ex) {
         var problemDetails = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+
+        log.warn(ex.getMessage(), ex);
+        return ResponseEntity.of(problemDetails).build();
+    }
+
+    @ExceptionHandler(InvalidTransactionQueryException.class)
+    ResponseEntity<ProblemDetail> handleInvalidTransactionQueryException(InvalidTransactionQueryException ex) {
+        var problemDetails = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
 
         log.warn(ex.getMessage(), ex);
         return ResponseEntity.of(problemDetails).build();

@@ -5,15 +5,20 @@ import dev.felix2000jp.envelope.accounts.application.dtos.AccountDto;
 import dev.felix2000jp.envelope.accounts.application.dtos.AccountListDto;
 import dev.felix2000jp.envelope.accounts.application.dtos.AddTransactionDto;
 import dev.felix2000jp.envelope.accounts.application.dtos.CreateAccountDto;
+import dev.felix2000jp.envelope.accounts.application.dtos.GetTransactionsDto;
 import dev.felix2000jp.envelope.accounts.application.dtos.TransactionDto;
-import dev.felix2000jp.envelope.accounts.application.dtos.TransactionListDto;
+import dev.felix2000jp.envelope.accounts.application.dtos.TransactionSliceDto;
 import dev.felix2000jp.envelope.accounts.application.dtos.UpdateAccountDto;
 import dev.felix2000jp.envelope.accounts.application.dtos.UpdateTransactionDto;
+import dev.felix2000jp.envelope.accounts.application.queries.TransactionQueryService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.util.UUID;
 
@@ -23,9 +28,11 @@ import java.util.UUID;
 class AccountController {
 
     private final AccountService accountService;
+    private final TransactionQueryService transactionQueryService;
 
-    AccountController(AccountService accountService) {
+    AccountController(AccountService accountService, TransactionQueryService transactionQueryService) {
         this.accountService = accountService;
+        this.transactionQueryService = transactionQueryService;
     }
 
     @GetMapping
@@ -66,8 +73,18 @@ class AccountController {
     }
 
     @GetMapping("/{id}/transactions")
-    ResponseEntity<TransactionListDto> getAccountTransactions(@PathVariable UUID id) {
-        var body = accountService.getAccountTransactions(id);
+    ResponseEntity<TransactionSliceDto> getTransactions(
+            @PathVariable UUID id,
+            @RequestParam(required = false, defaultValue = "30") @Min(1) @Max(100) int limit,
+            @RequestParam(required = false, defaultValue = "desc") String sort,
+            @RequestParam(required = false) String cursor,
+            @RequestParam(required = false) BigDecimal minAmount,
+            @RequestParam(required = false) BigDecimal maxAmount,
+            @RequestParam(required = false) String memo,
+            @RequestParam(required = false) Boolean cleared
+    ) {
+        var query = new GetTransactionsDto(limit, sort, cursor, minAmount, maxAmount, memo, cleared);
+        var body = transactionQueryService.getTransactions(id, query);
         return ResponseEntity.ok(body);
     }
 

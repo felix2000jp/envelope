@@ -314,67 +314,6 @@ class AccountServiceTest {
     }
 
     @Test
-    void getAccountTransactions_then_return_transaction_list() {
-        var securityUser = new SecurityUser(UUID.randomUUID(), "username", "password", Set.of());
-        var accountId = UUID.randomUUID();
-        var account = Account.from(
-                new AccountId(accountId),
-                new UserId(securityUser.id()),
-                new AccountName("Test Account"),
-                new AccountBalance(BigDecimal.valueOf(100.00))
-        );
-        account.addTransaction(
-                new TransactionAmount(BigDecimal.valueOf(50.00)),
-                new TransactionDate(LocalDate.of(2024, 1, 15)),
-                new TransactionMemo("First transaction"),
-                true
-        );
-        account.addTransaction(
-                new TransactionAmount(BigDecimal.valueOf(-25.00)),
-                new TransactionDate(LocalDate.of(2024, 2, 10)),
-                new TransactionMemo("Second transaction"),
-                false
-        );
-
-        when(securityService.loadUserFromSecurityContext()).thenReturn(securityUser);
-        when(
-                accountRepository.findByIdAndUserId(new AccountId(accountId), new UserId(securityUser.id()))
-        ).thenReturn(Optional.of(account));
-
-        var actual = accountService.getAccountTransactions(accountId);
-
-        assertThat(actual.total()).isEqualTo(3);
-        assertThat(actual.transactions()).hasSize(3);
-
-        var firstTransaction = actual.transactions().get(1);
-        assertThat(firstTransaction.amount()).isEqualTo(BigDecimal.valueOf(50.00));
-        assertThat(firstTransaction.dateOfTransaction()).isEqualTo(LocalDate.of(2024, 1, 15));
-        assertThat(firstTransaction.memo()).isEqualTo("First transaction");
-        assertThat(firstTransaction.cleared()).isTrue();
-
-        var secondTransaction = actual.transactions().get(2);
-        assertThat(secondTransaction.amount()).isEqualTo(BigDecimal.valueOf(-25.00));
-        assertThat(secondTransaction.dateOfTransaction()).isEqualTo(LocalDate.of(2024, 2, 10));
-        assertThat(secondTransaction.memo()).isEqualTo("Second transaction");
-        assertThat(secondTransaction.cleared()).isFalse();
-    }
-
-    @Test
-    void getAccountTransactions_given_account_not_found_then_throw_exception() {
-        var securityUser = new SecurityUser(UUID.randomUUID(), "username", "password", Set.of());
-        var accountId = UUID.randomUUID();
-
-        when(securityService.loadUserFromSecurityContext()).thenReturn(securityUser);
-        when(
-                accountRepository.findByIdAndUserId(new AccountId(accountId), new UserId(securityUser.id()))
-        ).thenReturn(Optional.empty());
-
-        assertThatThrownBy(
-                () -> accountService.getAccountTransactions(accountId)
-        ).isInstanceOf(AccountNotFoundException.class);
-    }
-
-    @Test
     void addTransaction_then_return_updated_account() {
         var securityUser = new SecurityUser(UUID.randomUUID(), "username", "password", Set.of());
         var accountId = UUID.randomUUID();
