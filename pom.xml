@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.3</version>
+        <version>4.0.4</version>
         <relativePath/>
     </parent>
     <groupId>dev.felix2000jp</groupId>
@@ -29,7 +29,7 @@
 
     <properties>
         <java.version>25</java.version>
-        <spring-modulith.version>2.0.3</spring-modulith.version>
+        <spring-modulith.version>2.0.4</spring-modulith.version>
         <jmolecules.version>2025.0.2</jmolecules.version>
     </properties>
 
