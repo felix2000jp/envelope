@@ -37,11 +37,12 @@ class AppuserDeletedEventHandlerIntegrationTest {
         var appuserDeletedEvent = new AppuserDeletedEvent(user1.value());
         scenario
                 .publish(appuserDeletedEvent)
-                .andWaitForStateChange(() -> accountRepository.findAllByUserId(user1).size())
-                .andVerify(userAccountCount -> {
+                .andWaitForStateChange(
+                        () -> accountRepository.findAllByUserId(user1).size(),
+                        size -> size == 0
+                )
+                .andVerify(_ -> {
                     var user2Accounts = accountRepository.findAllByUserId(user2);
-
-                    assertThat(userAccountCount).isZero();
                     assertThat(user2Accounts).hasSize(2);
                 });
     }
