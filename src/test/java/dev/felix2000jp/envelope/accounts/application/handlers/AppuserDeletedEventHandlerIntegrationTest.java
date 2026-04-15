@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.modulith.test.ApplicationModuleTest;
 import org.springframework.modulith.test.Scenario;
 
+import java.util.Collection;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,11 +38,9 @@ class AppuserDeletedEventHandlerIntegrationTest {
         var appuserDeletedEvent = new AppuserDeletedEvent(user1.value());
         scenario
                 .publish(appuserDeletedEvent)
-                .andWaitForStateChange(() -> accountRepository.findAllByUserId(user1).size())
-                .andVerify(userAccountCount -> {
+                .andWaitForStateChange(() -> accountRepository.findAllByUserId(user1), Collection::isEmpty)
+                .andVerify(_ -> {
                     var user2Accounts = accountRepository.findAllByUserId(user2);
-
-                    assertThat(userAccountCount).isZero();
                     assertThat(user2Accounts).hasSize(2);
                 });
     }
